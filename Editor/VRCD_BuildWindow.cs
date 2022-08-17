@@ -83,9 +83,21 @@ public class VRCD_BuildWindow : EditorWindow
 	private void Loggedin_Tab() {
 		GUILayout.Label("Logged in.");
 		
-		//List<string> campaigns;
+		// Warnings / errors in scene
+		// ...
+		
 		_campaignIndex = EditorGUILayout.Popup(_campaignIndex, _response._campaign_name_list);
 		_tierIndex = EditorGUILayout.Popup(_tierIndex, _response.getCampaign(_campaignIndex)._tier_name_list);
+		
+		if( GUILayout.Button("Build") ){
+			VRCD_SceneBuilder.BuildSceneBundle();
+		}
+		
+		if( GUILayout.Button("Build and Upload") ){
+			string guid = VRCD_SceneBuilder.BuildSceneBundle();
+			Debug.Log( "Generated " + AssetDatabase.GUIDToAssetPath( guid ) + ", uploading..." );
+			UploadBundle(guid);
+		}
 		
 	}
 	
@@ -115,5 +127,9 @@ public class VRCD_BuildWindow : EditorWindow
 		_loginRequest.SendWebRequest();
 		_isLoggingIn = true;
 		_hasTriedLogin = true;
+	}
+	
+	private void UploadBundle(string guid){
+		
 	}
 }
