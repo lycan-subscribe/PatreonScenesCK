@@ -48,6 +48,7 @@ namespace PatreonResponse
 	public class Campaign
 	{
 		public string type;
+		public string id;
 		public Attributes attributes;
 		public Relationships relationships;
 		
@@ -70,6 +71,14 @@ namespace PatreonResponse
 			}
 			
 			_tier_name_list = tier_names.ToArray();
+		}
+		
+		public string getName(){
+			return attributes.creation_name;
+		}
+		
+		public string getTierID(int index){
+			return relationships.tiers.data[index].id;
 		}
 		
 	}

@@ -29,6 +29,7 @@ public class VRCD_BuildWindow : EditorWindow
 	private PatreonResponse.Root _response;
 	private int _campaignIndex;
 	private int _tierIndex;
+	private bool _tierRequirement;
 	
 	private UnityWebRequest _uploadRequest = null;
 	private byte[] _bundleToUpload;
@@ -36,6 +37,7 @@ public class VRCD_BuildWindow : EditorWindow
 	private bool _isUploading;
 	private bool _hasTriedUpload;
 	private bool _uploadSucceeded;
+	private string _lastUploadedURL;
 	
 	[MenuItem("VRCD/Build Scene", false, 200)]
 	static void Init()
@@ -92,12 +94,7 @@ public class VRCD_BuildWindow : EditorWindow
 				string target_url = UploadResponse.GetURLFromJSON( _uploadRequest.downloadHandler.text );
 				Debug.Log( "Uploading to " + target_url + " ..." );
 				
-				_uploadRequest = UnityWebRequest.Put(target_url, _bundleToUpload);
-				_uploadRequest.SetRequestHeader("Content-Type", "application/x-world");
-				_uploadRequest.SetRequestHeader("x-amz-tagging", "patreon_id=" + _response.getUserID() +  "&patreon_campaign=None&patreon_required_tier=None");
-				
-				_uploadRequest.SendWebRequest();
-				_isUploading = true;
+				UploadBundleToS3( target_url );
 			}
 		}
 	}
@@ -145,6 +142,8 @@ public class VRCD_BuildWindow : EditorWindow
 		_campaignIndex = EditorGUILayout.Popup(_campaignIndex, _response._campaign_name_list);
 		_tierIndex = EditorGUILayout.Popup(_tierIndex, _response.getCampaign(_campaignIndex)._tier_name_list);
 		
+		_tierRequirement = EditorGUILayout.Toggle("Require tier membership", _tierRequirement);
+		
 		if( GUILayout.Button("Build") ){
 			VRCD_SceneBuilder.BuildSceneBundle();
 		}
@@ -161,7 +160,8 @@ public class VRCD_BuildWindow : EditorWindow
 		
 		if( _hasTriedUpload && !_isGettingUploadLink && !_isUploading ){
 			if( _uploadSucceeded ){
-				GUILayout.Label("Upload succeeded.");
+				GUILayout.Label("Upload succeeded. Public link:");
+				EditorGUILayout.SelectableLabel(_lastUploadedURL);
 			}
 			else{
 				GUILayout.Label("Error uploading: " + _uploadRequest.error);
@@ -210,11 +210,17 @@ public class VRCD_BuildWindow : EditorWindow
 		string asset_path = AssetDatabase.GUIDToAssetPath(guid);
 		_bundleToUpload = File.ReadAllBytes( asset_path );
 		
+		PatreonResponse.Campaign target_campaign = _response.getCampaign( _campaignIndex );
+		string required_tier = target_campaign.getTierID( _tierIndex );
+		if( !_tierRequirement ){
+			required_tier = "None";
+		}
+		
 		var param = new Dictionary<string,string>{
 			{ "content_length", _bundleToUpload.Length.ToString() },
 			{ "file_name", asset_path.Split('/').Last() },
-			{ "patreon_campaign", "None" },
-			{ "patreon_required_tier", "None" }
+			{ "patreon_campaign", target_campaign.id },
+			{ "patreon_required_tier", required_tier }
 		};
 		
 		_uploadRequest = UnityWebRequest.Get(
@@ -228,5 +234,37 @@ public class VRCD_BuildWindow : EditorWindow
 		_uploadRequest.SendWebRequest();
 		_isGettingUploadLink = true;
 		_hasTriedUpload = true;
+		
+		
+		// Save the target URL
+		
+		var target_param = new Dictionary<string,string>{
+			{ "response_type", "code" },
+			{ "scope", UnityWebRequest.EscapeURL( PATREON_CREATOR_SCOPES ) },
+			{ "client_id", PATREON_CLIENT_ID },
+			{ "redirect_uri", UnityWebRequest.EscapeURL(API_BASE_URL + "/get_world_patreon_gate") },
+			{ "state", _response.getUserID() + "-" + asset_path.Split('/').Last() }
+		};
+		
+		_lastUploadedURL = PATREON_AUTH_URL + "?" + string.Join("&", target_param.Select(x => x.Key + "=" + x.Value).ToArray());
+	}
+	
+	private void UploadBundleToS3(string target_url){
+		_uploadRequest = UnityWebRequest.Put(target_url, _bundleToUpload);
+		_uploadRequest.SetRequestHeader("Content-Type", "application/x-world");
+		
+		PatreonResponse.Campaign target_campaign = _response.getCampaign( _campaignIndex );
+		string required_tier = target_campaign.getTierID( _tierIndex );
+		if( !_tierRequirement ){
+			required_tier = "None";
+		}
+		_uploadRequest.SetRequestHeader("x-amz-tagging",
+			"patreon_id=" + _response.getUserID()
+			+ "&patreon_campaign=" + target_campaign.id
+			+ "&patreon_required_tier=" + required_tier
+		);
+		
+		_uploadRequest.SendWebRequest();
+		_isUploading = true;
 	}
 }
