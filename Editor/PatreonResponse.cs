@@ -32,6 +32,16 @@ namespace PatreonResponse
 		public Campaign getCampaign(int index){
 			return data[index];
 		}
+		
+		public string getUserID(){
+			foreach(Included i in included){
+				if( i.type == "user" ){
+					return i.id;
+				}
+			}
+			
+			return "";
+		}
     }
 	
 	[Serializable]

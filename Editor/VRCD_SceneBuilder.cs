@@ -9,7 +9,6 @@ public class VRCD_SceneBuilder
     [MenuItem("VRCD/Build Scene Bundle")]
 	public static string BuildSceneBundle(){ // Returns GUID for bundle
 		Scene scene = EditorSceneManager.GetActiveScene();
-		Debug.Log(scene.name);
 		
 		AssetBundleBuild build = new AssetBundleBuild();
 		build.assetBundleName = scene.name + ".xworld";
