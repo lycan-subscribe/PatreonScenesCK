@@ -8,7 +8,7 @@ using UnityEngine.Networking;
 using UnityEngine.Windows;
 
 [InitializeOnLoad]
-public class VRCD_BuildWindow : EditorWindow
+public class PSCK_BuildWindow : EditorWindow
 {
 	const string PATREON_CLIENT_ID = "5hPRg02JjlsKrIqWSQvbG-hvvUXrgJTXnvk3Fbzi8_Xn4-KHR3JGAytS_eR-0VY0";
 	const string PATREON_AUTH_URL = "https://patreon.com/oauth2/authorize";
@@ -39,10 +39,10 @@ public class VRCD_BuildWindow : EditorWindow
 	private bool _uploadSucceeded;
 	private string _lastUploadedURL;
 	
-	[MenuItem("VRCD/Build Scene", false, 200)]
+	[MenuItem("PSCK/Build Scene", false, 200)]
 	static void Init()
 	{
-		VRCD_BuildWindow window = (VRCD_BuildWindow) GetWindow(typeof(VRCD_BuildWindow), false, $"Scene Builder");
+		PSCK_BuildWindow window = (PSCK_BuildWindow) GetWindow(typeof(PSCK_BuildWindow), false, $"Scene Builder");
 		window.Show();
 	}
 	
@@ -145,11 +145,11 @@ public class VRCD_BuildWindow : EditorWindow
 		_tierRequirement = EditorGUILayout.Toggle("Require tier membership", _tierRequirement);
 		
 		if( GUILayout.Button("Build") ){
-			VRCD_SceneBuilder.BuildSceneBundle();
+			PSCK_SceneBuilder.BuildSceneBundle();
 		}
 		
 		if( GUILayout.Button("Build and Upload") ){
-			string guid = VRCD_SceneBuilder.BuildSceneBundle();
+			string guid = PSCK_SceneBuilder.BuildSceneBundle();
 			Debug.Log( "Generated " + AssetDatabase.GUIDToAssetPath( guid ) + ", uploading..." );
 			UploadBundle(guid);
 		}

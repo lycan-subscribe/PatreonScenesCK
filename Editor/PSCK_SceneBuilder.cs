@@ -4,9 +4,9 @@ using UnityEngine.SceneManagement;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 
-public class VRCD_SceneBuilder
+public class PSCK_SceneBuilder
 {
-    [MenuItem("VRCD/Build Scene Bundle")]
+    [MenuItem("PSCK/Build Scene Bundle")]
 	public static string BuildSceneBundle(){ // Returns GUID for bundle
 		Scene scene = EditorSceneManager.GetActiveScene();
 		
@@ -19,8 +19,8 @@ public class VRCD_SceneBuilder
 		//build.assetNames[dependencies.Length] = scene.path;
 		build.assetNames = new string[]{ scene.path };
 		
-		if( !AssetDatabase.IsValidFolder("Assets/_VRCDSceneBundles") ){
-			AssetDatabase.CreateFolder("Assets", "_VRCDSceneBundles");
+		if( !AssetDatabase.IsValidFolder("Assets/_PSCKSceneBundles") ){
+			AssetDatabase.CreateFolder("Assets", "_PSCKSceneBundles");
 		}
 		string outputPath = AssetDatabase.GUIDToAssetPath( AssetDatabase.CreateFolder("Assets/_VRCDSceneBundles", scene.name) );
 		
