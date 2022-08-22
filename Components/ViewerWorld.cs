@@ -5,6 +5,7 @@ using UnityEngine;
 public class ViewerWorld : MonoBehaviour
 {
 	public Transform spawn;
+    public ViewerAvatar avatar;
 	public ViewerPose[] poses;
 	
     // Start is called before the first frame update
