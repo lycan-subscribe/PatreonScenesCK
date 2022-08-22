@@ -22,7 +22,7 @@ public class PSCK_SceneBuilder
 		if( !AssetDatabase.IsValidFolder("Assets/_PSCKSceneBundles") ){
 			AssetDatabase.CreateFolder("Assets", "_PSCKSceneBundles");
 		}
-		string outputPath = AssetDatabase.GUIDToAssetPath( AssetDatabase.CreateFolder("Assets/_VRCDSceneBundles", scene.name) );
+		string outputPath = AssetDatabase.GUIDToAssetPath( AssetDatabase.CreateFolder("Assets/_PSCKSceneBundles", scene.name) );
 		
 		Debug.Log("Building to " + outputPath + "...");
 		AssetBundleManifest mani = BuildPipeline.BuildAssetBundles(
