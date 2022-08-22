@@ -11,4 +11,8 @@ public class ViewerAvatar: MonoBehaviour
 
         Assert.IsTrue( animator.isHuman );
     }
+
+    public void SetController(RuntimeAnimatorController ac){
+        animator.runtimeAnimatorController = ac;
+    }
 }
