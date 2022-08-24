@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ViewerWorld : MonoBehaviour
+public class ViewerScene : MonoBehaviour
 {
 	public Transform spawn;
     public ViewerAvatar avatar;
