@@ -11,6 +11,7 @@ public class PSCK_PreviewPose : Editor
 	void OnEnable(){ // Pose selected
 		EditorApplication.update += Update;
 
+		/* This makes a clone in the client, pls find an editor method
 		if( Application.isPlaying ){
 			// See if an avatar exists
 			ViewerAvatar current_avi = FindObjectOfType<ViewerAvatar>();
@@ -22,6 +23,7 @@ public class PSCK_PreviewPose : Editor
 				avatar.SetController( ((ViewerPose) target).pose_controller );
 			}
 		}
+		*/
 	}
 
 	void OnDisable(){ // Something else selected

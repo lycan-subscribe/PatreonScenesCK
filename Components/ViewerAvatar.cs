@@ -7,7 +7,7 @@ public class ViewerAvatar: MonoBehaviour
 {
     public Vector3 viewpoint = new Vector3(0, 0.1f, 0);
 
-    Animator animator;
+    public Animator animator;
 
     void OnEnable(){
         animator = GetComponent<Animator>();
